@@ -9,12 +9,14 @@
 </head>
 <body>
 
+    <!-- 🚨 Top Running Declaration -->
     <div class="ticker-wrap notranslate">
         <div class="ticker">
             <strong>DISCLAIMER:</strong> This website is an independent, satirical project aimed at political awareness among youth. It has no affiliation with the Election Commission of India (ECI) or any real political party.
         </div>
     </div>
 
+    <!-- 🏛️ Navigation Bar -->
     <header class="sticky-header">
         <nav class="voting-nav">
             <div class="logo notranslate">
@@ -25,14 +27,15 @@
             <div class="nav-links">
                 <div id="google_translate_element" style="display: none;"></div>
                 
-                <button id="customTranslateBtn" class="nav-btn translate-btn notranslate">🌐 Hindi</button>
+                <button type="button" id="customTranslateBtn" class="nav-btn translate-btn notranslate">🌐 Hindi</button>
                 <a href="index.html" class="nav-btn notranslate">🏠 Home</a> 
-                <button id="googleLoginBtn" class="login-btn notranslate">🔐 Login to Vote</button>
+                <button type="button" id="googleLoginBtn" class="login-btn notranslate">🔐 Login to Vote</button>
             </div>
         </nav>
         <div class="tiranga-strip"></div>
     </header>
 
+    <!-- ❓ About Section -->
     <section class="intro-section">
         <h2>What is <span class="notranslate">BBJP</span>? (Backbencher Janata Party)</h2>
         <p><strong class="notranslate">BBJP</strong> is not just an ordinary political party, but a digital movement for the youth, backbenchers, and the common people of the country. Our mission is to expose the flaws of the system and build a transparent society.</p>
@@ -43,6 +46,7 @@
         </div>
     </section>
 
+    <!-- 📊 Main Graph -->
     <section class="graph-section">
         <h2>Live Voting Support Graph</h2>
         <p class="graph-subtitle">Watch the real-time public support. Swipe left/right on mobile to view clearly!</p>
@@ -53,6 +57,7 @@
         </div>
     </section>
 
+    <!-- 🖲️ Digital EVM Grid -->
     <section class="evm-section">
         <div class="party-grid">
             
@@ -60,11 +65,11 @@
                 <h3 class="notranslate">BJP</h3>
                 <p>Bharatiya Janata Party</p>
                 <div class="action-buttons">
-                    <button class="btn-vote" onclick="castVote('BJP', 'vote')">🟢 Vote <span id="bjp-vote" class="notranslate">0</span></button>
-                    <button class="btn-like" onclick="castVote('BJP', 'like')">👍 Like <span id="bjp-like" class="notranslate">0</span></button>
-                    <button class="btn-dislike" onclick="castVote('BJP', 'dislike')">👎 Dislike <span id="bjp-dislike" class="notranslate">0</span></button>
-                    <button class="btn-corrupt" onclick="castVote('BJP', 'corruption')">💸 Corruption <span id="bjp-corrupt" class="notranslate">0</span></button>
-                    <button class="btn-fake" onclick="castVote('BJP', 'fake')">🤥 Fake Promises <span id="bjp-fake" class="notranslate">0</span></button>
+                    <button type="button" class="btn-vote" onclick="castVote('BJP', 'vote')">🟢 Vote <span id="bjp-vote" class="notranslate">0</span></button>
+                    <button type="button" class="btn-like" onclick="castVote('BJP', 'like')">👍 Like <span id="bjp-like" class="notranslate">0</span></button>
+                    <button type="button" class="btn-dislike" onclick="castVote('BJP', 'dislike')">👎 Dislike <span id="bjp-dislike" class="notranslate">0</span></button>
+                    <button type="button" class="btn-corrupt" onclick="castVote('BJP', 'corruption')">💸 Corruption <span id="bjp-corrupt" class="notranslate">0</span></button>
+                    <button type="button" class="btn-fake" onclick="castVote('BJP', 'fake')">🤥 Fake Promises <span id="bjp-fake" class="notranslate">0</span></button>
                 </div>
             </div>
 
@@ -72,11 +77,11 @@
                 <h3 class="notranslate">Congress</h3>
                 <p>Indian National Congress</p>
                 <div class="action-buttons">
-                    <button class="btn-vote" onclick="castVote('INC', 'vote')">🟢 Vote <span id="inc-vote" class="notranslate">0</span></button>
-                    <button class="btn-like" onclick="castVote('INC', 'like')">👍 Like <span id="inc-like" class="notranslate">0</span></button>
-                    <button class="btn-dislike" onclick="castVote('INC', 'dislike')">👎 Dislike <span id="inc-dislike" class="notranslate">0</span></button>
-                    <button class="btn-corrupt" onclick="castVote('INC', 'corruption')">💸 Corruption <span id="inc-corrupt" class="notranslate">0</span></button>
-                    <button class="btn-fake" onclick="castVote('INC', 'fake')">🤥 Fake Promises <span id="inc-fake" class="notranslate">0</span></button>
+                    <button type="button" class="btn-vote" onclick="castVote('INC', 'vote')">🟢 Vote <span id="inc-vote" class="notranslate">0</span></button>
+                    <button type="button" class="btn-like" onclick="castVote('INC', 'like')">👍 Like <span id="inc-like" class="notranslate">0</span></button>
+                    <button type="button" class="btn-dislike" onclick="castVote('INC', 'dislike')">👎 Dislike <span id="inc-dislike" class="notranslate">0</span></button>
+                    <button type="button" class="btn-corrupt" onclick="castVote('INC', 'corruption')">💸 Corruption <span id="inc-corrupt" class="notranslate">0</span></button>
+                    <button type="button" class="btn-fake" onclick="castVote('INC', 'fake')">🤥 Fake Promises <span id="inc-fake" class="notranslate">0</span></button>
                 </div>
             </div>
 
@@ -84,11 +89,11 @@
                 <h3 class="notranslate">AAP</h3>
                 <p>Aam Aadmi Party</p>
                 <div class="action-buttons">
-                    <button class="btn-vote" onclick="castVote('AAP', 'vote')">🟢 Vote <span id="aap-vote" class="notranslate">0</span></button>
-                    <button class="btn-like" onclick="castVote('AAP', 'like')">👍 Like <span id="aap-like" class="notranslate">0</span></button>
-                    <button class="btn-dislike" onclick="castVote('AAP', 'dislike')">👎 Dislike <span id="aap-dislike" class="notranslate">0</span></button>
-                    <button class="btn-corrupt" onclick="castVote('AAP', 'corruption')">💸 Corruption <span id="aap-corrupt" class="notranslate">0</span></button>
-                    <button class="btn-fake" onclick="castVote('AAP', 'fake')">🤥 Fake Promises <span id="aap-fake" class="notranslate">0</span></button>
+                    <button type="button" class="btn-vote" onclick="castVote('AAP', 'vote')">🟢 Vote <span id="aap-vote" class="notranslate">0</span></button>
+                    <button type="button" class="btn-like" onclick="castVote('AAP', 'like')">👍 Like <span id="aap-like" class="notranslate">0</span></button>
+                    <button type="button" class="btn-dislike" onclick="castVote('AAP', 'dislike')">👎 Dislike <span id="aap-dislike" class="notranslate">0</span></button>
+                    <button type="button" class="btn-corrupt" onclick="castVote('AAP', 'corruption')">💸 Corruption <span id="aap-corrupt" class="notranslate">0</span></button>
+                    <button type="button" class="btn-fake" onclick="castVote('AAP', 'fake')">🤥 Fake Promises <span id="aap-fake" class="notranslate">0</span></button>
                 </div>
             </div>
 
@@ -96,11 +101,11 @@
                 <h3 class="notranslate">BSP</h3>
                 <p>Bahujan Samaj Party</p>
                 <div class="action-buttons">
-                    <button class="btn-vote" onclick="castVote('BSP', 'vote')">🟢 Vote <span id="bsp-vote" class="notranslate">0</span></button>
-                    <button class="btn-like" onclick="castVote('BSP', 'like')">👍 Like <span id="bsp-like" class="notranslate">0</span></button>
-                    <button class="btn-dislike" onclick="castVote('BSP', 'dislike')">👎 Dislike <span id="bsp-dislike" class="notranslate">0</span></button>
-                    <button class="btn-corrupt" onclick="castVote('BSP', 'corruption')">💸 Corruption <span id="bsp-corrupt" class="notranslate">0</span></button>
-                    <button class="btn-fake" onclick="castVote('BSP', 'fake')">🤥 Fake Promises <span id="bsp-fake" class="notranslate">0</span></button>
+                    <button type="button" class="btn-vote" onclick="castVote('BSP', 'vote')">🟢 Vote <span id="bsp-vote" class="notranslate">0</span></button>
+                    <button type="button" class="btn-like" onclick="castVote('BSP', 'like')">👍 Like <span id="bsp-like" class="notranslate">0</span></button>
+                    <button type="button" class="btn-dislike" onclick="castVote('BSP', 'dislike')">👎 Dislike <span id="bsp-dislike" class="notranslate">0</span></button>
+                    <button type="button" class="btn-corrupt" onclick="castVote('BSP', 'corruption')">💸 Corruption <span id="bsp-corrupt" class="notranslate">0</span></button>
+                    <button type="button" class="btn-fake" onclick="castVote('BSP', 'fake')">🤥 Fake Promises <span id="bsp-fake" class="notranslate">0</span></button>
                 </div>
             </div>
 
@@ -108,9 +113,9 @@
                 <h3 class="notranslate">CJP 🪳</h3>
                 <p>Cockroach Janata Party (Satire)</p>
                 <div class="action-buttons">
-                    <button class="btn-vote" onclick="castVote('CJP', 'vote')">🟢 Vote <span id="cjp-vote" class="notranslate">0</span></button>
-                    <button class="btn-like" onclick="castVote('CJP', 'like')">👍 Like <span id="cjp-like" class="notranslate">0</span></button>
-                    <button class="btn-dislike" onclick="castVote('CJP', 'dislike')">👎 Dislike <span id="cjp-dislike" class="notranslate">0</span></button>
+                    <button type="button" class="btn-vote" onclick="castVote('CJP', 'vote')">🟢 Vote <span id="cjp-vote" class="notranslate">0</span></button>
+                    <button type="button" class="btn-like" onclick="castVote('CJP', 'like')">👍 Like <span id="cjp-like" class="notranslate">0</span></button>
+                    <button type="button" class="btn-dislike" onclick="castVote('CJP', 'dislike')">👎 Dislike <span id="cjp-dislike" class="notranslate">0</span></button>
                 </div>
             </div>
 
@@ -118,7 +123,7 @@
                 <h3 class="notranslate">NOTA 🛑</h3>
                 <p>None of the Above / Other</p>
                 <div class="action-buttons">
-                    <button class="btn-vote notranslate" onclick="castVote('NOTA', 'vote')">🟢 Vote NOTA <span id="nota-vote">0</span></button>
+                    <button type="button" class="btn-vote notranslate" onclick="castVote('NOTA', 'vote')">🟢 Vote NOTA <span id="nota-vote">0</span></button>
                 </div>
             </div>
 
@@ -126,8 +131,8 @@
                 <h3 class="notranslate">BBJP 👑</h3>
                 <p>Backbencher Janata Party</p>
                 <div class="action-buttons">
-                    <button class="btn-vote" onclick="castVote('BBJP', 'vote')">🟢 Support <span id="bbjp-vote" class="notranslate">0</span></button>
-                    <button class="btn-like" onclick="castVote('BBJP', 'like')">👍 Like <span id="bbjp-like" class="notranslate">0</span></button>
+                    <button type="button" class="btn-vote" onclick="castVote('BBJP', 'vote')">🟢 Support <span id="bbjp-vote" class="notranslate">0</span></button>
+                    <button type="button" class="btn-like" onclick="castVote('BBJP', 'like')">👍 Like <span id="bbjp-like" class="notranslate">0</span></button>
                     <a href="join.html" class="join-btn notranslate">🔥 Join Movement</a>
                 </div>
             </div>
@@ -135,6 +140,7 @@
         </div>
     </section>
 
+    <!-- 📊 Detailed Graph -->
     <section class="graph-section">
         <h2>Detailed Party Performance</h2>
         <p class="graph-subtitle">Separate analysis of Likes, Dislikes, Corruption, and Fake Promises.</p>
@@ -145,6 +151,7 @@
         </div>
     </section>
 
+    <!-- 🔥 Bottom Join Section -->
     <section class="bottom-join-section">
         <h2>Be a Part of the Change!</h2>
         <p>Your single vote and support can shake the system. Join the 13 categories of BBJP today.</p>
@@ -156,6 +163,19 @@
         <p>© 2026 BBJP Movement. All Rights Reserved.</p>
     </footer>
 
+    <!-- 🛑 CUSTOM LOGIN MODAL (New Feature) -->
+    <div id="loginModal" class="custom-modal notranslate">
+        <div class="modal-content">
+            <h3>🔒 Login Required</h3>
+            <p>Please login securely with your Google account to cast your vote and reactions. This helps us stop fake voting!</p>
+            <div class="modal-buttons">
+                <button type="button" id="modalLoginBtn" class="login-btn-large">🔐 Login with Google</button>
+                <button type="button" onclick="closeModal()" class="close-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Translate Script -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'hi,en', autoDisplay: false}, 'google_translate_element');
@@ -163,6 +183,7 @@
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
+    <!-- App Script -->
     <script type="module" src="voting-script.js"></script>
 </body>
 </html>

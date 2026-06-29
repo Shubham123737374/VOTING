@@ -4,7 +4,8 @@ document.cookie = "googtrans=/en/en; path=/";
 
 // 🌐 Custom Translator Toggle Logic
 let isHindi = false;
-document.getElementById('customTranslateBtn').addEventListener('click', function() {
+document.getElementById('customTranslateBtn').addEventListener('click', function(e) {
+    e.preventDefault();
     let selectField = document.querySelector('.goog-te-combo');
     if(selectField) {
         if(!isHindi) {
@@ -13,7 +14,6 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
             this.innerHTML = '🌐 English';
             isHindi = true;
         } else {
-            // Revert back to English
             selectField.value = 'en'; 
             selectField.dispatchEvent(new Event('change'));
             this.innerHTML = '🌐 Hindi';
@@ -25,9 +25,9 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
 });
 
 
-// 🚀 FIREBASE SETUP (Your Original Keys Added - DO NOT CHANGE)
+// 🚀 FIREBASE SETUP
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -40,7 +40,6 @@ const firebaseConfig = {
     measurementId: "G-07K9E9T5RL"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
@@ -49,29 +48,40 @@ const provider = new GoogleAuthProvider();
 // 🔐 Global Login State
 let isLoggedIn = false; 
 
-// Google Login Function
-document.getElementById('googleLoginBtn').addEventListener('click', function() {
-    signInWithPopup(auth, provider)
-    .then((result) => {
+// ✨ NEW: This keeps the user logged in even if the page refreshes!
+onAuthStateChanged(auth, (user) => {
+    if (user) {
         isLoggedIn = true;
-        this.innerText = `✅ Hi, ${result.user.displayName.split(' ')[0]}`;
-        this.style.backgroundColor = "#138808"; // Turns green on success
-        alert("Login Successful! You are ready to vote.");
-    }).catch((error) => {
-        alert("Login Failed. Please make sure you are running this on a live server (127.0.0.1). Error: " + error.message);
-    });
+        let btn = document.getElementById('googleLoginBtn');
+        btn.innerText = `✅ Hi, ${user.displayName.split(' ')[0]}`;
+        btn.style.backgroundColor = "#138808"; 
+        closeModal(); // Hides modal if it was open
+    } else {
+        isLoggedIn = false;
+    }
 });
 
-// 📊 Main Voting Chart Setup
+// Google Login Function (Attached to both Navbar and Modal Button)
+function handleGoogleLogin(e) {
+    if(e) e.preventDefault();
+    signInWithPopup(auth, provider).catch((error) => {
+        alert("Login Failed. Error: " + error.message);
+    });
+}
+document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
+document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleLogin);
+
+
+// 📊 Main Voting Chart Setup (BBJP REMOVED - NOW 6 PARTIES)
 const ctxMain = document.getElementById('mainVotingChart').getContext('2d');
 const mainChart = new Chart(ctxMain, {
     type: 'bar',
     data: {
-        labels: ['BJP', 'Congress', 'AAP', 'BSP', 'CJP 🪳', 'NOTA 🛑', 'BBJP 👑'],
+        labels: ['BJP', 'Congress', 'AAP', 'BSP', 'CJP 🪳', 'NOTA 🛑'],
         datasets: [{
             label: 'Total Votes (Live Support)',
-            data: [0, 0, 0, 0, 0, 0, 0], 
-            backgroundColor: ['#ff9933', '#19aa52', '#0066a4', '#22409a', '#8d6e63', '#666666', '#FF9933'],
+            data: [0, 0, 0, 0, 0, 0], 
+            backgroundColor: ['#ff9933', '#19aa52', '#0066a4', '#22409a', '#8d6e63', '#666666'],
             borderRadius: 5
         }]
     },
@@ -86,17 +96,17 @@ const mainChart = new Chart(ctxMain, {
     }
 });
 
-// 📈 Detailed Analysis Chart Setup
+// 📈 Detailed Analysis Chart Setup (BBJP REMOVED - NOW 5 PARTIES)
 const ctxDetailed = document.getElementById('detailedChart').getContext('2d');
 const detailedChart = new Chart(ctxDetailed, {
     type: 'bar',
     data: {
-        labels: ['BJP', 'Congress', 'AAP', 'BSP', 'CJP', 'BBJP'],
+        labels: ['BJP', 'Congress', 'AAP', 'BSP', 'CJP'],
         datasets: [
-            { label: 'Likes', data: [0,0,0,0,0,0], backgroundColor: '#1565c0' },
-            { label: 'Dislikes', data: [0,0,0,0,0,0], backgroundColor: '#4b5563' },
-            { label: 'Corruption', data: [0,0,0,0,0,0], backgroundColor: '#dc2626' },
-            { label: 'Fake Promises', data: [0,0,0,0,0,0], backgroundColor: '#d97706' }
+            { label: 'Likes', data: [0,0,0,0,0], backgroundColor: '#1565c0' },
+            { label: 'Dislikes', data: [0,0,0,0,0], backgroundColor: '#4b5563' },
+            { label: 'Corruption', data: [0,0,0,0,0], backgroundColor: '#dc2626' },
+            { label: 'Fake Promises', data: [0,0,0,0,0], backgroundColor: '#d97706' }
         ]
     },
     options: {
@@ -110,10 +120,16 @@ const detailedChart = new Chart(ctxDetailed, {
     }
 });
 
+// 🛑 MODAL FUNCTIONS
+window.closeModal = function() {
+    document.getElementById('loginModal').style.display = 'none';
+};
+
 // 🖲️ Voting & Logic Handler
 window.castVote = function(partyName, actionType) {
     if (!isLoggedIn) {
-        alert('⚠️ Please click "Login to Vote" at the top before submitting your reaction!');
+        // ✨ NEW: Opens the beautiful Custom Popup instead of an alert!
+        document.getElementById('loginModal').style.display = 'flex';
         return;
     }
 

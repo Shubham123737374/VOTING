@@ -61,16 +61,8 @@ body { top: 0px !important; }
 .graph-section h2 { color: #000080; margin-bottom: 5px; }
 .graph-subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
 
-/* 🔴 GRAPH FIX (Swipeable on Mobile) */
-.chart-wrapper {
-    width: 100%;
-    overflow-x: auto; /* Allow side scroll if needed */
-}
-.chart-container { 
-    position: relative; 
-    height: 350px; 
-    width: 100%;
-}
+.chart-wrapper { width: 100%; overflow-x: auto; }
+.chart-container { position: relative; height: 350px; width: 100%; }
 .detailed-chart-container { height: 450px; }
 
 /* Digital EVM Grid */
@@ -122,6 +114,22 @@ body { top: 0px !important; }
 /* Footer */
 .voting-footer { background: #111; color: #999; text-align: center; padding: 20px; font-size: 13px; }
 
+/* 🛑 CUSTOM LOGIN MODAL STYLES */
+.custom-modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center;
+}
+.modal-content {
+    background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 90%; width: 400px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4); border-top: 5px solid #d32f2f;
+}
+.modal-content h3 { color: #d32f2f; margin-bottom: 10px; font-size: 22px; }
+.modal-content p { color: #555; margin-bottom: 25px; font-size: 15px; line-height: 1.5; }
+.modal-buttons { display: flex; flex-direction: column; gap: 10px; }
+.close-btn { background: #e0e0e0; color: #333; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.close-btn:hover { background: #ccc; }
+.login-btn-large { background: #138808; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
 /* 📱 RESPONSIVE FIXES FOR MOBILE */
 @media screen and (max-width: 1024px) { 
     .party-card { width: calc(50% - 15px); } 
@@ -129,32 +137,9 @@ body { top: 0px !important; }
 
 @media screen and (max-width: 600px) {
     .party-card { width: 100%; }
-    
-    /* Mobile Header Fix: Logo on top, 3 buttons in one row */
-    .voting-nav { 
-        flex-direction: column; 
-        text-align: center; 
-        padding: 15px 10px; 
-    }
-    .logo { 
-        margin-bottom: 15px; 
-        justify-content: center;
-    }
-    .nav-links { 
-        justify-content: space-between; 
-        width: 100%; 
-        flex-direction: row; 
-        gap: 5px; 
-    }
-    .nav-btn, .login-btn {
-        flex: 1; /* Makes all 3 buttons perfectly equal width */
-        padding: 10px 5px;
-        font-size: 12px; /* Smaller font to fit mobile screen */
-        text-align: center;
-    }
-
-    /* Force graph container to be minimum 500px so user can swipe */
-    .chart-container {
-        min-width: 500px; 
-    }
+    .voting-nav { flex-direction: column; text-align: center; padding: 15px 10px; }
+    .logo { margin-bottom: 15px; justify-content: center; }
+    .nav-links { justify-content: space-between; width: 100%; flex-direction: row; gap: 5px; }
+    .nav-btn, .login-btn { flex: 1; padding: 10px 5px; font-size: 12px; text-align: center; }
+    .chart-container { min-width: 500px; } /* Ensures chart swipes cleanly */
 }
