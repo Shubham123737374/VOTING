@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBJP - The Real People's Court (Live Polling)</title>
+    <link rel="stylesheet" href="voting-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- 🚨 Top Running Declaration (notranslate लगाया है ताकि ये इंग्लिश में रहे) -->
+    <div class="ticker-wrap notranslate">
+        <div class="ticker">
+            <strong>DISCLAIMER:</strong> This website is an independent, satirical project aimed at political awareness among youth. It has no affiliation with the Election Commission of India (ECI) or any real political party.
+        </div>
+    </div>
+
+    <!-- 🏛️ Navigation Bar (Tiranga Theme) -->
+    <header class="sticky-header">
+        <nav class="voting-nav">
+            <!-- Logo area protected from translation -->
+            <div class="logo notranslate">
+                <img src="assets/logo.png" alt="BBJP Logo" class="brand-logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/A_blank_black_picture.jpg/150px-A_blank_black_picture.jpg'"> 
+                BBJP <span class="highlight-text">Polling</span>
+            </div>
+            
+            <div class="nav-links">
+                <!-- Hidden Google Translate Element -->
+                <div id="google_translate_element" style="display: none;"></div>
+                
+                <!-- Custom Toggle Button -->
+                <button id="customTranslateBtn" class="nav-btn translate-btn notranslate">🌐 Hindi</button>
+                <a href="index.html" class="nav-btn notranslate">🏠 Home</a> 
+                <button id="googleLoginBtn" class="login-btn notranslate">🔐 Login to Vote</button>
+            </div>
+        </nav>
+        <div class="tiranga-strip"></div>
+    </header>
+
+    <!-- ❓ About Section -->
+    <section class="intro-section">
+        <h2><span class="notranslate">BBJP</span> क्या है? (Backbencher Janata Party)</h2>
+        <p><strong class="notranslate">BBJP</strong> कोई आम राजनीतिक दल नहीं, बल्कि देश के युवाओं, बैकबेंचर्स और आम जनता का एक डिजिटल मूवमेंट है। हमारा मकसद है सिस्टम की कमियों को उजागर करना और एक पारदर्शी समाज बनाना।</p>
+        
+        <div class="page-objective">
+            <h3>🗳️ यह पेज क्या है?</h3>
+            <p>यह <strong>'जनता की असली अदालत' (Live Voting Page)</strong> है। यहाँ आप बिना डरे अपना निष्पक्ष वोट दे सकते हैं, और पार्टियों के झूठे वादों व करप्शन का असली पर्दाफाश कर सकते हैं। अपना वोट ज़रूर दें और सच्चाई सामने लाएं!</p>
+        </div>
+    </section>
+
+    <!-- 📊 Main Graph -->
+    <section class="graph-section">
+        <h2>Live Voting Support Graph</h2>
+        <p class="graph-subtitle">Watch the real-time public support. The graph auto-scales as votes increase!</p>
+        <div class="chart-container">
+            <canvas id="mainVotingChart"></canvas>
+        </div>
+    </section>
+
+    <!-- 🖲️ Digital EVM Grid -->
+    <section class="evm-section">
+        <div class="party-grid">
+            
+            <div class="party-card">
+                <h3 class="notranslate">BJP</h3>
+                <p>Bharatiya Janata Party</p>
+                <div class="action-buttons">
+                    <button class="btn-vote" onclick="castVote('BJP', 'vote')">🟢 Vote <span id="bjp-vote" class="notranslate">0</span></button>
+                    <button class="btn-like" onclick="castVote('BJP', 'like')">👍 Like <span id="bjp-like" class="notranslate">0</span></button>
+                    <button class="btn-dislike" onclick="castVote('BJP', 'dislike')">👎 Dislike <span id="bjp-dislike" class="notranslate">0</span></button>
+                    <button class="btn-corrupt" onclick="castVote('BJP', 'corruption')">💸 Corruption <span id="bjp-corrupt" class="notranslate">0</span></button>
+                    <button class="btn-fake" onclick="castVote('BJP', 'fake')">🤥 Fake Promises <span id="bjp-fake" class="notranslate">0</span></button>
+                </div>
+            </div>
+
+            <div class="party-card">
+                <h3 class="notranslate">Congress</h3>
+                <p>Indian National Congress</p>
+                <div class="action-buttons">
+                    <button class="btn-vote" onclick="castVote('INC', 'vote')">🟢 Vote <span id="inc-vote" class="notranslate">0</span></button>
+                    <button class="btn-like" onclick="castVote('INC', 'like')">👍 Like <span id="inc-like" class="notranslate">0</span></button>
+                    <button class="btn-dislike" onclick="castVote('INC', 'dislike')">👎 Dislike <span id="inc-dislike" class="notranslate">0</span></button>
+                    <button class="btn-corrupt" onclick="castVote('INC', 'corruption')">💸 Corruption <span id="inc-corrupt" class="notranslate">0</span></button>
+                    <button class="btn-fake" onclick="castVote('INC', 'fake')">🤥 Fake Promises <span id="inc-fake" class="notranslate">0</span></button>
+                </div>
+            </div>
+
+            <div class="party-card">
+                <h3 class="notranslate">AAP</h3>
+                <p>Aam Aadmi Party</p>
+                <div class="action-buttons">
+                    <button class="btn-vote" onclick="castVote('AAP', 'vote')">🟢 Vote <span id="aap-vote" class="notranslate">0</span></button>
+                    <button class="btn-like" onclick="castVote('AAP', 'like')">👍 Like <span id="aap-like" class="notranslate">0</span></button>
+                    <button class="btn-dislike" onclick="castVote('AAP', 'dislike')">👎 Dislike <span id="aap-dislike" class="notranslate">0</span></button>
+                    <button class="btn-corrupt" onclick="castVote('AAP', 'corruption')">💸 Corruption <span id="aap-corrupt" class="notranslate">0</span></button>
+                    <button class="btn-fake" onclick="castVote('AAP', 'fake')">🤥 Fake Promises <span id="aap-fake" class="notranslate">0</span></button>
+                </div>
+            </div>
+
+            <div class="party-card">
+                <h3 class="notranslate">BSP</h3>
+                <p>Bahujan Samaj Party</p>
+                <div class="action-buttons">
+                    <button class="btn-vote" onclick="castVote('BSP', 'vote')">🟢 Vote <span id="bsp-vote" class="notranslate">0</span></button>
+                    <button class="btn-like" onclick="castVote('BSP', 'like')">👍 Like <span id="bsp-like" class="notranslate">0</span></button>
+                    <button class="btn-dislike" onclick="castVote('BSP', 'dislike')">👎 Dislike <span id="bsp-dislike" class="notranslate">0</span></button>
+                    <button class="btn-corrupt" onclick="castVote('BSP', 'corruption')">💸 Corruption <span id="bsp-corrupt" class="notranslate">0</span></button>
+                    <button class="btn-fake" onclick="castVote('BSP', 'fake')">🤥 Fake Promises <span id="bsp-fake" class="notranslate">0</span></button>
+                </div>
+            </div>
+
+            <div class="party-card meme-card">
+                <h3 class="notranslate">CJP 🪳</h3>
+                <p>Cockroach Janata Party (Satire)</p>
+                <div class="action-buttons">
+                    <button class="btn-vote" onclick="castVote('CJP', 'vote')">🟢 Vote <span id="cjp-vote" class="notranslate">0</span></button>
+                    <button class="btn-like" onclick="castVote('CJP', 'like')">👍 Like <span id="cjp-like" class="notranslate">0</span></button>
+                    <button class="btn-dislike" onclick="castVote('CJP', 'dislike')">👎 Dislike <span id="cjp-dislike" class="notranslate">0</span></button>
+                </div>
+            </div>
+
+            <div class="party-card nota-card">
+                <h3 class="notranslate">NOTA 🛑</h3>
+                <p>None of the Above / Other</p>
+                <div class="action-buttons">
+                    <button class="btn-vote notranslate" onclick="castVote('NOTA', 'vote')">🟢 Vote NOTA <span id="nota-vote">0</span></button>
+                </div>
+            </div>
+
+            <div class="party-card bbjp-card">
+                <h3 class="notranslate">BBJP 👑</h3>
+                <p>Backbencher Janata Party</p>
+                <div class="action-buttons">
+                    <button class="btn-vote" onclick="castVote('BBJP', 'vote')">🟢 Support <span id="bbjp-vote" class="notranslate">0</span></button>
+                    <button class="btn-like" onclick="castVote('BBJP', 'like')">👍 Like <span id="bbjp-like" class="notranslate">0</span></button>
+                    <a href="join.html" class="join-btn notranslate">🔥 Join Movement</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 📊 Detailed Graph -->
+    <section class="graph-section">
+        <h2>Detailed Party Performance</h2>
+        <p class="graph-subtitle">Separate analysis of Likes, Dislikes, Corruption, and Fake Promises.</p>
+        <div class="chart-container detailed-chart-container">
+            <canvas id="detailedChart"></canvas>
+        </div>
+    </section>
+
+    <!-- 🔥 Bottom Join Section -->
+    <section class="bottom-join-section">
+        <h2>Be a Part of the Change!</h2>
+        <p>Your single vote and support can shake the system. Join the 13 categories of BBJP today.</p>
+        <a href="join.html" class="join-btn-large notranslate">🔥 JOIN BBJP MOVEMENT NOW</a>
+    </section>
+
+    <footer class="voting-footer notranslate">
+        <p><strong>Disclaimer:</strong> This is an independent, satirical project. We do not authenticate the user opinions presented here.</p>
+        <p>© 2026 BBJP Movement. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Google Translate Script (Hidden mode) -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'hi,en', autoDisplay: false}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- App Script -->
+    <script type="module" src="voting-script.js"></script>
+</body>
+</html>
