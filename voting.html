@@ -9,27 +9,22 @@
 </head>
 <body>
 
-    <!-- 🚨 Top Running Declaration (notranslate लगाया है ताकि ये इंग्लिश में रहे) -->
     <div class="ticker-wrap notranslate">
         <div class="ticker">
             <strong>DISCLAIMER:</strong> This website is an independent, satirical project aimed at political awareness among youth. It has no affiliation with the Election Commission of India (ECI) or any real political party.
         </div>
     </div>
 
-    <!-- 🏛️ Navigation Bar (Tiranga Theme) -->
     <header class="sticky-header">
         <nav class="voting-nav">
-            <!-- Logo area protected from translation -->
             <div class="logo notranslate">
                 <img src="assets/logo.png" alt="BBJP Logo" class="brand-logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/A_blank_black_picture.jpg/150px-A_blank_black_picture.jpg'"> 
                 BBJP <span class="highlight-text">Polling</span>
             </div>
             
             <div class="nav-links">
-                <!-- Hidden Google Translate Element -->
                 <div id="google_translate_element" style="display: none;"></div>
                 
-                <!-- Custom Toggle Button -->
                 <button id="customTranslateBtn" class="nav-btn translate-btn notranslate">🌐 Hindi</button>
                 <a href="index.html" class="nav-btn notranslate">🏠 Home</a> 
                 <button id="googleLoginBtn" class="login-btn notranslate">🔐 Login to Vote</button>
@@ -38,27 +33,26 @@
         <div class="tiranga-strip"></div>
     </header>
 
-    <!-- ❓ About Section -->
     <section class="intro-section">
-        <h2><span class="notranslate">BBJP</span> क्या है? (Backbencher Janata Party)</h2>
-        <p><strong class="notranslate">BBJP</strong> कोई आम राजनीतिक दल नहीं, बल्कि देश के युवाओं, बैकबेंचर्स और आम जनता का एक डिजिटल मूवमेंट है। हमारा मकसद है सिस्टम की कमियों को उजागर करना और एक पारदर्शी समाज बनाना।</p>
+        <h2>What is <span class="notranslate">BBJP</span>? (Backbencher Janata Party)</h2>
+        <p><strong class="notranslate">BBJP</strong> is not just an ordinary political party, but a digital movement for the youth, backbenchers, and the common people of the country. Our mission is to expose the flaws of the system and build a transparent society.</p>
         
         <div class="page-objective">
-            <h3>🗳️ यह पेज क्या है?</h3>
-            <p>यह <strong>'जनता की असली अदालत' (Live Voting Page)</strong> है। यहाँ आप बिना डरे अपना निष्पक्ष वोट दे सकते हैं, और पार्टियों के झूठे वादों व करप्शन का असली पर्दाफाश कर सकते हैं। अपना वोट ज़रूर दें और सच्चाई सामने लाएं!</p>
+            <h3>🗳️ What is this page?</h3>
+            <p>This is the <strong>'Real People's Court' (Live Voting Page)</strong>. Here you can cast your unbiased vote without any fear, and expose the fake promises and corruption of political parties. Cast your vote and bring out the truth!</p>
         </div>
     </section>
 
-    <!-- 📊 Main Graph -->
     <section class="graph-section">
         <h2>Live Voting Support Graph</h2>
-        <p class="graph-subtitle">Watch the real-time public support. The graph auto-scales as votes increase!</p>
-        <div class="chart-container">
-            <canvas id="mainVotingChart"></canvas>
+        <p class="graph-subtitle">Watch the real-time public support. Swipe left/right on mobile to view clearly!</p>
+        <div class="chart-wrapper">
+            <div class="chart-container">
+                <canvas id="mainVotingChart"></canvas>
+            </div>
         </div>
     </section>
 
-    <!-- 🖲️ Digital EVM Grid -->
     <section class="evm-section">
         <div class="party-grid">
             
@@ -141,16 +135,16 @@
         </div>
     </section>
 
-    <!-- 📊 Detailed Graph -->
     <section class="graph-section">
         <h2>Detailed Party Performance</h2>
         <p class="graph-subtitle">Separate analysis of Likes, Dislikes, Corruption, and Fake Promises.</p>
-        <div class="chart-container detailed-chart-container">
-            <canvas id="detailedChart"></canvas>
+        <div class="chart-wrapper">
+            <div class="chart-container detailed-chart-container">
+                <canvas id="detailedChart"></canvas>
+            </div>
         </div>
     </section>
 
-    <!-- 🔥 Bottom Join Section -->
     <section class="bottom-join-section">
         <h2>Be a Part of the Change!</h2>
         <p>Your single vote and support can shake the system. Join the 13 categories of BBJP today.</p>
@@ -162,7 +156,6 @@
         <p>© 2026 BBJP Movement. All Rights Reserved.</p>
     </footer>
 
-    <!-- Google Translate Script (Hidden mode) -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'hi,en', autoDisplay: false}, 'google_translate_element');
@@ -170,7 +163,6 @@
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-    <!-- App Script -->
     <script type="module" src="voting-script.js"></script>
 </body>
 </html>

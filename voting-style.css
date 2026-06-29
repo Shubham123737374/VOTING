@@ -1,4 +1,4 @@
-/* Base Theme (Light/Tiranga Theme) */
+/* Base Theme */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
 body { background-color: #f4f7fb; color: #333333; }
 
@@ -12,7 +12,7 @@ body { background-color: #f4f7fb; color: #333333; }
     position: sticky; top: 0; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* Navbar (Navy Blue) */
+/* Navbar */
 .voting-nav {
     background-color: #000080; 
     color: white; padding: 15px 30px; 
@@ -60,7 +60,17 @@ body { top: 0px !important; }
 }
 .graph-section h2 { color: #000080; margin-bottom: 5px; }
 .graph-subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
-.chart-container { position: relative; height: 350px; width: 100%; }
+
+/* 🔴 GRAPH FIX (Swipeable on Mobile) */
+.chart-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Allow side scroll if needed */
+}
+.chart-container { 
+    position: relative; 
+    height: 350px; 
+    width: 100%;
+}
 .detailed-chart-container { height: 450px; }
 
 /* Digital EVM Grid */
@@ -112,10 +122,39 @@ body { top: 0px !important; }
 /* Footer */
 .voting-footer { background: #111; color: #999; text-align: center; padding: 20px; font-size: 13px; }
 
-/* Responsive Media Queries */
-@media screen and (max-width: 1024px) { .party-card { width: calc(50% - 15px); } }
+/* 📱 RESPONSIVE FIXES FOR MOBILE */
+@media screen and (max-width: 1024px) { 
+    .party-card { width: calc(50% - 15px); } 
+}
+
 @media screen and (max-width: 600px) {
     .party-card { width: 100%; }
-    .voting-nav { flex-direction: column; text-align: center; }
-    .nav-links { justify-content: center; width: 100%; }
+    
+    /* Mobile Header Fix: Logo on top, 3 buttons in one row */
+    .voting-nav { 
+        flex-direction: column; 
+        text-align: center; 
+        padding: 15px 10px; 
+    }
+    .logo { 
+        margin-bottom: 15px; 
+        justify-content: center;
+    }
+    .nav-links { 
+        justify-content: space-between; 
+        width: 100%; 
+        flex-direction: row; 
+        gap: 5px; 
+    }
+    .nav-btn, .login-btn {
+        flex: 1; /* Makes all 3 buttons perfectly equal width */
+        padding: 10px 5px;
+        font-size: 12px; /* Smaller font to fit mobile screen */
+        text-align: center;
+    }
+
+    /* Force graph container to be minimum 500px so user can swipe */
+    .chart-container {
+        min-width: 500px; 
+    }
 }
