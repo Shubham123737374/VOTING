@@ -25,21 +25,22 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
 });
 
 
-// 🚀 FIREBASE SETUP 
+// 🚀 FIREBASE SETUP
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+// ✅ Fix: Changed back to signInWithPopup to bypass mobile cookie blockers
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// ✅ 100% CORRECT API KEY CONFIGURATION (As provided by you)
+// ✅ 100% CORRECT CONFIGURATION (With Database URL)
 const firebaseConfig = {
-    apiKey: "AIzaSyDDNIkNSmhU79q_UXwP1wR-c88CCYMETXs",
-    authDomain: "bbjp-vote.firebaseapp.com",
-    databaseURL: "https://bbjp-vote-default-rtdb.firebaseio.com",
-    projectId: "bbjp-vote",
-    storageBucket: "bbjp-vote.firebasestorage.app",
-    messagingSenderId: "408980373851",
-    appId: "1:408980373851:web:2916222e7fb180fd7b9a7e",
-    measurementId: "G-07K9E9T5RL"
+  apiKey: "AIzaSyDDNIkNSmhU79q_UXwP1wR-c88CCYMETXs",
+  authDomain: "bbjp-vote.firebaseapp.com",
+  databaseURL: "https://bbjp-vote-default-rtdb.firebaseio.com",
+  projectId: "bbjp-vote",
+  storageBucket: "bbjp-vote.firebasestorage.app",
+  messagingSenderId: "408980373851",
+  appId: "1:408980373851:web:2916222e7fb180fd7b9a7e",
+  measurementId: "G-07K9E9T5RL"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -49,15 +50,6 @@ const provider = new GoogleAuthProvider();
 
 // 🔐 Global Login State
 let isLoggedIn = false; 
-
-// Handle Redirect Login Result
-getRedirectResult(auth).then((result) => {
-    if (result) {
-        alert("Login Successful! You are ready to vote.");
-    }
-}).catch((error) => {
-    console.error("Login Redirect Error:", error);
-});
 
 // Keeps user logged in even on refresh
 onAuthStateChanged(auth, (user) => {
@@ -72,10 +64,26 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Secure Login Function
+// ✅ Secure Popup Login Function
 function handleGoogleLogin(e) {
     if(e) e.preventDefault();
-    signInWithRedirect(auth, provider);
+    
+    // Popup method avoids the redirect cookie loss issue on mobile browsers
+    signInWithPopup(auth, provider).then((result) => {
+        isLoggedIn = true;
+        let btn = document.getElementById('googleLoginBtn');
+        btn.innerText = `✅ Hi, ${result.user.displayName.split(' ')[0]}`;
+        btn.style.backgroundColor = "#138808";
+        alert("Login Successful! You are ready to vote.");
+        closeModal();
+    }).catch((error) => {
+        // If popup is blocked or closed by user
+        if(error.code === 'auth/popup-closed-by-user') {
+            console.log("User closed the popup.");
+        } else {
+            alert("Login Failed. Error: " + error.message);
+        }
+    });
 }
 document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
 document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleLogin);
