@@ -47,11 +47,13 @@ const provider = new GoogleAuthProvider();
 
 let isLoggedIn = false; 
 let isBlockedOnDevice = false; 
+let currentUserUid = null; // ✅ FIX: Ab har user ki alag pehchaan hogi
 
 // Force browser to remember login
 setPersistence(auth, browserLocalPersistence).then(() => {
     onAuthStateChanged(auth, (user) => {
         if (user) {
+            currentUserUid = user.uid; // Save unique ID
             checkDeviceLimit(user.uid); 
             isLoggedIn = true;
             let btn = document.getElementById('googleLoginBtn');
@@ -59,6 +61,7 @@ setPersistence(auth, browserLocalPersistence).then(() => {
             btn.style.backgroundColor = "#138808"; 
             closeModal(); 
         } else {
+            currentUserUid = null;
             isLoggedIn = false;
         }
     });
@@ -91,6 +94,7 @@ function handleGoogleLogin(e) {
         return;
     }
     signInWithPopup(auth, provider).then((result) => {
+        currentUserUid = result.user.uid;
         checkDeviceLimit(result.user.uid);
         isLoggedIn = true;
         let btn = document.getElementById('googleLoginBtn');
@@ -106,10 +110,9 @@ document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleL
 
 // 📊 REGISTER DATALABELS PLUGIN
 Chart.register(ChartDataLabels);
-
 let globalTotalVotes = 0; 
 
-// 🔴 MAIN CHART SETUP (Lines Wapas, Colors matched)
+// 🔴 MAIN CHART SETUP
 const ctxMain = document.getElementById('mainVotingChart').getContext('2d');
 const mainChart = new Chart(ctxMain, {
     type: 'bar',
@@ -123,12 +126,11 @@ const mainChart = new Chart(ctxMain, {
     },
     options: { 
         responsive: true, maintainAspectRatio: false,
-        layout: { padding: { top: 40 } },
+        layout: { padding: { top: 50 } },
         plugins: { 
             legend: { labels: { color: '#333' } },
             datalabels: {
                 anchor: 'end', align: 'end', offset: 4,
-                // Box color matches the bar color automatically!
                 backgroundColor: function(context) { return context.dataset.backgroundColor[context.dataIndex]; }, 
                 borderRadius: 4, color: '#ffffff',
                 font: { weight: 'bold', size: 12 },
@@ -140,14 +142,13 @@ const mainChart = new Chart(ctxMain, {
             }
         },
         scales: {
-            // Numbers hidden, but grid lines SHOWING!
             y: { beginAtZero: true, ticks: { display: false }, grid: { display: true, color: '#e5e7eb', drawBorder: false }, grace: '30%' },
             x: { ticks: { color: '#666', font: {weight: 'bold'} }, grid: { display: false } }
         }
     }
 });
 
-// 🔴 DETAILED CHART SETUP (Lines Wapas, Label box matching bar colors)
+// 🔴 DETAILED CHART SETUP
 const ctxDetailed = document.getElementById('detailedChart').getContext('2d');
 const detailedChart = new Chart(ctxDetailed, {
     type: 'bar',
@@ -162,19 +163,17 @@ const detailedChart = new Chart(ctxDetailed, {
     },
     options: { 
         responsive: true, maintainAspectRatio: false,
-        layout: { padding: { top: 40 } },
+        layout: { padding: { top: 60 } },
         plugins: { 
             legend: { labels: { color: '#333' } },
             datalabels: {
                 anchor: 'end', align: 'end', offset: 2,
-                // White background replaced! Now it matches the exact bar color
                 backgroundColor: function(context) { return context.dataset.backgroundColor; },
                 borderRadius: 4, color: 'white', font: { weight: 'bold', size: 11 },
                 formatter: function(value) { return value > 0 ? value : ''; }
             }
         },
         scales: {
-            // Numbers hidden, but grid lines SHOWING!
             y: { beginAtZero: true, ticks: { display: false }, grid: { display: true, color: '#e5e7eb', drawBorder: false }, grace: '30%' },
             x: { ticks: { color: '#666', font: {weight: 'bold'} }, grid: { display: false } }
         }
@@ -191,7 +190,6 @@ onValue(dbRef, (snapshot) => {
 
     const partiesMain = ['BJB', 'KNC', 'APP', 'BSSP', 'CJP', 'NOTA'];
     const partiesDetailed = ['BJB', 'KNC', 'APP', 'BSSP', 'CJP'];
-
     let currentTotalVotes = 0;
 
     for (let party in data) {
@@ -229,7 +227,7 @@ onValue(dbRef, (snapshot) => {
 
 // 🖲️ SMART VOTING LOGIC
 window.castVote = function(partyName, actionType) {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !currentUserUid) {
         openLoginModal();
         return;
     }
@@ -239,25 +237,41 @@ window.castVote = function(partyName, actionType) {
         return;
     }
 
-    if (actionType === 'vote' && localStorage.getItem('hasVoted') === 'true') {
-        alert('⚠️ You have already submitted your final vote! You cannot vote again.');
+    // ✅ FIX 1: BBJP Support Logic Separated!
+    if (partyName === 'BBJP' && actionType === 'vote') {
+        let supportKey = 'hasSupportedBBJP_' + currentUserUid;
+        if (localStorage.getItem(supportKey) === 'true') {
+            alert('⚠️ You have already supported BBJP!');
+            return;
+        }
+        localStorage.setItem(supportKey, 'true');
+        const refPath = ref(database, 'parties/BBJP/vote'); 
+        runTransaction(refPath, (curr) => (curr || 0) + 1)
+        .then(() => alert('Thank you for supporting BBJP!'))
+        .catch(err => alert('Error: ' + err.message));
         return;
     }
 
+    // ✅ FIX 2: Main Vote Logic (Using User's UID so Email 1 and Email 2 don't mix)
     if (actionType === 'vote') {
+        let voteKey = 'hasVoted_' + currentUserUid;
+        if (localStorage.getItem(voteKey) === 'true') {
+            alert('⚠️ You have already submitted your final vote from this account! You cannot vote again.');
+            return;
+        }
+
+        localStorage.setItem(voteKey, 'true');
         const partyActionRef = ref(database, 'parties/' + partyName + '/vote');
         runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; })
-        .then(() => {
-             localStorage.setItem('hasVoted', 'true');
-             alert(`Thank you! Your VOTE for ${partyName} has been recorded live.`);
-        })
+        .then(() => { alert(`Thank you! Your VOTE for ${partyName} has been recorded live.`); })
         .catch((error) => { alert(`⚠️ Vote Failed! Error: ` + error.message); });
         return;
     }
 
+    // ✅ FIX 3: Like/Dislike Toggle Logic (Using UID)
     if (actionType === 'like' || actionType === 'dislike') {
-        let storageKey = `reaction_${partyName}`;
-        let previousReaction = localStorage.getItem(storageKey);
+        let reactionKey = `reaction_${partyName}_${currentUserUid}`;
+        let previousReaction = localStorage.getItem(reactionKey);
 
         if (previousReaction === actionType) {
             alert(`You have already reacted '${actionType}' to ${partyName}.`);
@@ -269,7 +283,7 @@ window.castVote = function(partyName, actionType) {
             runTransaction(oldRef, (currentCount) => { return Math.max(0, (currentCount || 0) - 1); });
         }
         
-        localStorage.setItem(storageKey, actionType);
+        localStorage.setItem(reactionKey, actionType);
         const newRef = ref(database, 'parties/' + partyName + '/' + actionType);
         runTransaction(newRef, (currentCount) => { return (currentCount || 0) + 1; })
         .then(() => { alert(`Your '${actionType}' reaction for ${partyName} is recorded!`); })
@@ -277,6 +291,14 @@ window.castVote = function(partyName, actionType) {
         return;
     }
 
+    // ✅ Normal Reactions (Corruption, Fake Promises) with UID
+    let normalReactionKey = `reaction_${actionType}_${partyName}_${currentUserUid}`;
+    if (localStorage.getItem(normalReactionKey) === 'true') {
+        alert(`You have already reacted '${actionType}' to ${partyName}.`);
+        return;
+    }
+    
+    localStorage.setItem(normalReactionKey, 'true');
     const partyActionRef = ref(database, 'parties/' + partyName + '/' + actionType);
     runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; })
     .then(() => { alert(`Your '${actionType}' reaction for ${partyName} has been recorded live.`); })
