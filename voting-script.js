@@ -25,10 +25,9 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
 });
 
 
-// 🚀 FIREBASE SETUP
+// 🚀 FIREBASE SETUP (Your Original Keys Added)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-// ✅ CHANGED: Imported signInWithRedirect and getRedirectResult for flawless mobile login
-import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -49,15 +48,6 @@ const provider = new GoogleAuthProvider();
 // 🔐 Global Login State
 let isLoggedIn = false; 
 
-// ✨ NEW: Handle the result after the page redirects back from Google
-getRedirectResult(auth).then((result) => {
-    if (result) {
-        alert("Login Successful! You are ready to vote.");
-    }
-}).catch((error) => {
-    console.error("Login Redirect Error:", error);
-});
-
 // Keeps user logged in even on refresh
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -71,22 +61,27 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// ✅ CHANGED: Using Redirect instead of Popup for Mobile Compatibility
+// ✅ STABLE LOGIN FIX: Using signInWithPopup securely
 function handleGoogleLogin(e) {
-    if(e) e.preventDefault();
-    // This safely redirects to Google, avoiding browser blocking issues
-    signInWithRedirect(auth, provider);
+    e.preventDefault(); // Prevents page reload
+    signInWithPopup(auth, provider).then((result) => {
+        alert("Login Successful! You are ready to vote.");
+        closeModal();
+    }).catch((error) => {
+        alert("Login Failed. Error: " + error.message);
+    });
 }
+
 document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
 document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleLogin);
 
 
-// 📊 Main Voting Chart Setup
+// 📊 Main Voting Chart Setup (BBJP Removed - New Parody Names Added)
 const ctxMain = document.getElementById('mainVotingChart').getContext('2d');
 const mainChart = new Chart(ctxMain, {
     type: 'bar',
     data: {
-        labels: ['BJP', 'Congress', 'AAP', 'BSP', 'CJP 🪳', 'NOTA 🛑'],
+        labels: ['BJB 🌻', 'KNC ✋', 'APP 🧹', 'BSSP 🐘', 'CJP 🪳', 'NOTA 🛑'],
         datasets: [{
             label: 'Total Votes (Live Support)',
             data: [0, 0, 0, 0, 0, 0], 
@@ -105,12 +100,12 @@ const mainChart = new Chart(ctxMain, {
     }
 });
 
-// 📈 Detailed Analysis Chart Setup
+// 📈 Detailed Analysis Chart Setup (BBJP Removed - New Parody Names Added)
 const ctxDetailed = document.getElementById('detailedChart').getContext('2d');
 const detailedChart = new Chart(ctxDetailed, {
     type: 'bar',
     data: {
-        labels: ['BJP', 'Congress', 'AAP', 'BSP', 'CJP'],
+        labels: ['BJB', 'KNC', 'APP', 'BSSP', 'CJP'],
         datasets: [
             { label: 'Likes', data: [0,0,0,0,0], backgroundColor: '#1565c0' },
             { label: 'Dislikes', data: [0,0,0,0,0], backgroundColor: '#4b5563' },
@@ -152,6 +147,4 @@ window.castVote = function(partyName, actionType) {
     } else {
         alert(`Your '${actionType}' reaction for ${partyName} has been recorded.`);
     }
-
-    console.log(`Action: ${actionType} recorded for Party: ${partyName}`);
 };
