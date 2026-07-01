@@ -23,7 +23,8 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
 });
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+// ✅ MOBILE FIX: Added browserLocalPersistence to remember login on mobile
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -44,16 +45,19 @@ const provider = new GoogleAuthProvider();
 
 let isLoggedIn = false; 
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        isLoggedIn = true;
-        let btn = document.getElementById('googleLoginBtn');
-        btn.innerText = `✅ Hi, ${user.displayName.split(' ')[0]}`;
-        btn.style.backgroundColor = "#138808"; 
-        closeModal(); 
-    } else {
-        isLoggedIn = false;
-    }
+// Force browser to remember login
+setPersistence(auth, browserLocalPersistence).then(() => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            isLoggedIn = true;
+            let btn = document.getElementById('googleLoginBtn');
+            btn.innerText = `✅ Hi, ${user.displayName.split(' ')[0]}`;
+            btn.style.backgroundColor = "#138808"; 
+            closeModal(); 
+        } else {
+            isLoggedIn = false;
+        }
+    });
 });
 
 function handleGoogleLogin(e) {
@@ -74,7 +78,7 @@ function handleGoogleLogin(e) {
 document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
 document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleLogin);
 
-// Setup Charts (Only 6 parties, BBJP is excluded from arrays)
+// Setup Charts
 const ctxMain = document.getElementById('mainVotingChart').getContext('2d');
 const mainChart = new Chart(ctxMain, {
     type: 'bar',
@@ -116,15 +120,13 @@ onValue(dbRef, (snapshot) => {
     let likesData = [0,0,0,0,0]; let dislikesData = [0,0,0,0,0];
     let corruptionData = [0,0,0,0,0]; let fakeData = [0,0,0,0,0];
 
-    // Arrays used ONLY for Graph mapping (BBJP is NOT here, so it stays off the graph)
     const partiesMain = ['BJB', 'KNC', 'APP', 'BSSP', 'CJP', 'NOTA'];
     const partiesDetailed = ['BJB', 'KNC', 'APP', 'BSSP', 'CJP'];
 
     for (let party in data) {
         let pData = data[party];
-        let pId = party.toLowerCase(); // Works for 'bbjp' too!
+        let pId = party.toLowerCase(); 
 
-        // Update Numbers in Buttons (BBJP will update normally here)
         if(document.getElementById(pId + '-vote')) document.getElementById(pId + '-vote').innerText = pData.vote || 0;
         if(document.getElementById(pId + '-like')) document.getElementById(pId + '-like').innerText = pData.like || 0;
         if(document.getElementById(pId + '-dislike')) document.getElementById(pId + '-dislike').innerText = pData.dislike || 0;
@@ -148,14 +150,13 @@ onValue(dbRef, (snapshot) => {
 });
 
 
-// 🖲️ SMART VOTING LOGIC (Device limit and Toggle)
+// 🖲️ SMART VOTING LOGIC
 window.castVote = function(partyName, actionType) {
     if (!isLoggedIn) {
         document.getElementById('loginModal').style.display = 'flex';
         return;
     }
 
-    // 1. DEVICE LIMIT LOGIC (Max 5 Votes per device)
     if (actionType === 'vote') {
         let deviceVotes = parseInt(localStorage.getItem('device_vote_count') || '0');
         if (deviceVotes >= 5) {
@@ -165,12 +166,18 @@ window.castVote = function(partyName, actionType) {
         localStorage.setItem('device_vote_count', deviceVotes + 1);
         
         const partyActionRef = ref(database, 'parties/' + partyName + '/vote');
-        runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; });
-        alert(`Thank you! Your VOTE for ${partyName} has been recorded live.`);
+        
+        // ✅ FIX: Added error catching to tell you WHY it failed!
+        runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; })
+        .then(() => {
+             alert(`Thank you! Your VOTE for ${partyName} has been recorded live.`);
+        })
+        .catch((error) => {
+             alert(`⚠️ Vote Failed to Save! Database Error: ` + error.message + `\n(Please check Firebase Database Rules)`);
+        });
         return;
     }
 
-    // 2. LIKE / DISLIKE TOGGLE LOGIC
     if (actionType === 'like' || actionType === 'dislike') {
         let storageKey = `reaction_${partyName}`;
         let previousReaction = localStorage.getItem(storageKey);
@@ -187,14 +194,14 @@ window.castVote = function(partyName, actionType) {
         
         localStorage.setItem(storageKey, actionType);
         const newRef = ref(database, 'parties/' + partyName + '/' + actionType);
-        runTransaction(newRef, (currentCount) => { return (currentCount || 0) + 1; });
-        
-        alert(`Your '${actionType}' reaction for ${partyName} is recorded!`);
+        runTransaction(newRef, (currentCount) => { return (currentCount || 0) + 1; })
+        .then(() => { alert(`Your '${actionType}' reaction for ${partyName} is recorded!`); })
+        .catch((error) => { alert(`⚠️ Reaction Failed! Database Error: ` + error.message); });
         return;
     }
 
-    // 3. NORMAL REACTIONS
     const partyActionRef = ref(database, 'parties/' + partyName + '/' + actionType);
-    runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; });
-    alert(`Your '${actionType}' reaction for ${partyName} has been recorded live.`);
+    runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; })
+    .then(() => { alert(`Your '${actionType}' reaction for ${partyName} has been recorded live.`); })
+    .catch((error) => { alert(`⚠️ Reaction Failed! Database Error: ` + error.message); });
 };
