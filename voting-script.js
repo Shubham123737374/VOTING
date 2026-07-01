@@ -25,11 +25,12 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
 });
 
 
-// 🚀 FIREBASE SETUP (Your Original Keys Added)
+// 🚀 FIREBASE SETUP 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+// ✅ 100% CORRECT API KEY CONFIGURATION
 const firebaseConfig = {
     apiKey: "AIzaSyDDNIKNSmhU79q_UXwP1wR-c88CCYMETxs",
     authDomain: "bbjp-vote.firebaseapp.com",
@@ -48,6 +49,15 @@ const provider = new GoogleAuthProvider();
 // 🔐 Global Login State
 let isLoggedIn = false; 
 
+// Handle Redirect Login Result
+getRedirectResult(auth).then((result) => {
+    if (result) {
+        alert("Login Successful! You are ready to vote.");
+    }
+}).catch((error) => {
+    console.error("Login Redirect Error:", error);
+});
+
 // Keeps user logged in even on refresh
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -61,22 +71,16 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// ✅ STABLE LOGIN FIX: Using signInWithPopup securely
+// Secure Login Function
 function handleGoogleLogin(e) {
-    e.preventDefault(); // Prevents page reload
-    signInWithPopup(auth, provider).then((result) => {
-        alert("Login Successful! You are ready to vote.");
-        closeModal();
-    }).catch((error) => {
-        alert("Login Failed. Error: " + error.message);
-    });
+    if(e) e.preventDefault();
+    signInWithRedirect(auth, provider);
 }
-
 document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
 document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleLogin);
 
 
-// 📊 Main Voting Chart Setup (BBJP Removed - New Parody Names Added)
+// 📊 Main Voting Chart Setup
 const ctxMain = document.getElementById('mainVotingChart').getContext('2d');
 const mainChart = new Chart(ctxMain, {
     type: 'bar',
@@ -100,7 +104,7 @@ const mainChart = new Chart(ctxMain, {
     }
 });
 
-// 📈 Detailed Analysis Chart Setup (BBJP Removed - New Parody Names Added)
+// 📈 Detailed Analysis Chart Setup
 const ctxDetailed = document.getElementById('detailedChart').getContext('2d');
 const detailedChart = new Chart(ctxDetailed, {
     type: 'bar',
