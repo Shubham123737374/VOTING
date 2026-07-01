@@ -1,8 +1,6 @@
-// 🧹 Force English on Page Load
 document.cookie = "googtrans=/en/en; path=/; domain=" + window.location.hostname;
 document.cookie = "googtrans=/en/en; path=/";
 
-// 🌐 Custom Translator Toggle Logic
 let isHindi = false;
 document.getElementById('customTranslateBtn').addEventListener('click', function(e) {
     e.preventDefault();
@@ -20,18 +18,14 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
             isHindi = false;
         }
     } else {
-        alert("Translator is loading, please wait a second...");
+        alert("Translator is loading, please wait...");
     }
 });
 
-
-// 🚀 FIREBASE SETUP
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-// ✅ Fix: Changed back to signInWithPopup to bypass mobile cookie blockers
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// ✅ 100% CORRECT CONFIGURATION (With Database URL)
 const firebaseConfig = {
   apiKey: "AIzaSyDDNIkNSmhU79q_UXwP1wR-c88CCYMETXs",
   authDomain: "bbjp-vote.firebaseapp.com",
@@ -48,10 +42,8 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-// 🔐 Global Login State
 let isLoggedIn = false; 
 
-// Keeps user logged in even on refresh
 onAuthStateChanged(auth, (user) => {
     if (user) {
         isLoggedIn = true;
@@ -64,11 +56,8 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// ✅ Secure Popup Login Function
 function handleGoogleLogin(e) {
     if(e) e.preventDefault();
-    
-    // Popup method avoids the redirect cookie loss issue on mobile browsers
     signInWithPopup(auth, provider).then((result) => {
         isLoggedIn = true;
         let btn = document.getElementById('googleLoginBtn');
@@ -77,10 +66,7 @@ function handleGoogleLogin(e) {
         alert("Login Successful! You are ready to vote.");
         closeModal();
     }).catch((error) => {
-        // If popup is blocked or closed by user
-        if(error.code === 'auth/popup-closed-by-user') {
-            console.log("User closed the popup.");
-        } else {
+        if(error.code !== 'auth/popup-closed-by-user') {
             alert("Login Failed. Error: " + error.message);
         }
     });
@@ -88,32 +74,21 @@ function handleGoogleLogin(e) {
 document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
 document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleLogin);
 
-
-// 📊 Main Voting Chart Setup
+// Setup Charts (Only 6 parties, BBJP is excluded from arrays)
 const ctxMain = document.getElementById('mainVotingChart').getContext('2d');
 const mainChart = new Chart(ctxMain, {
     type: 'bar',
     data: {
         labels: ['BJB 🌻', 'KNC ✋', 'APP 🧹', 'BSSP 🐘', 'CJP 🪳', 'NOTA 🛑'],
         datasets: [{
-            label: 'Total Votes (Live Support)',
-            data: [0, 0, 0, 0, 0, 0], 
-            backgroundColor: ['#ff9933', '#19aa52', '#0066a4', '#22409a', '#8d6e63', '#666666'],
-            borderRadius: 5
+            label: 'Total Votes (Live)',
+            data: [0,0,0,0,0,0], 
+            backgroundColor: ['#ff9933', '#19aa52', '#0066a4', '#22409a', '#8d6e63', '#666666'], borderRadius: 5
         }]
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#333' } } },
-        scales: {
-            y: { beginAtZero: true, ticks: { color: '#666' }, grid: { color: '#e5e7eb' } },
-            x: { ticks: { color: '#666' }, grid: { display: false } }
-        }
-    }
+    options: { responsive: true, maintainAspectRatio: false }
 });
 
-// 📈 Detailed Analysis Chart Setup
 const ctxDetailed = document.getElementById('detailedChart').getContext('2d');
 const detailedChart = new Chart(ctxDetailed, {
     type: 'bar',
@@ -126,38 +101,100 @@ const detailedChart = new Chart(ctxDetailed, {
             { label: 'Fake Promises', data: [0,0,0,0,0], backgroundColor: '#d97706' }
         ]
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#333' } } },
-        scales: {
-            y: { beginAtZero: true, ticks: { color: '#666' }, grid: { color: '#e5e7eb' } },
-            x: { ticks: { color: '#666' }, grid: { display: false } }
-        }
-    }
+    options: { responsive: true, maintainAspectRatio: false }
 });
 
-// 🛑 MODAL FUNCTIONS
 window.closeModal = function() {
     document.getElementById('loginModal').style.display = 'none';
 };
 
-// 🖲️ Voting & Logic Handler
+// LIVE DATA FETCHING
+const dbRef = ref(database, 'parties');
+onValue(dbRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    let votesData = [0,0,0,0,0,0]; 
+    let likesData = [0,0,0,0,0]; let dislikesData = [0,0,0,0,0];
+    let corruptionData = [0,0,0,0,0]; let fakeData = [0,0,0,0,0];
+
+    // Arrays used ONLY for Graph mapping (BBJP is NOT here, so it stays off the graph)
+    const partiesMain = ['BJB', 'KNC', 'APP', 'BSSP', 'CJP', 'NOTA'];
+    const partiesDetailed = ['BJB', 'KNC', 'APP', 'BSSP', 'CJP'];
+
+    for (let party in data) {
+        let pData = data[party];
+        let pId = party.toLowerCase(); // Works for 'bbjp' too!
+
+        // Update Numbers in Buttons (BBJP will update normally here)
+        if(document.getElementById(pId + '-vote')) document.getElementById(pId + '-vote').innerText = pData.vote || 0;
+        if(document.getElementById(pId + '-like')) document.getElementById(pId + '-like').innerText = pData.like || 0;
+        if(document.getElementById(pId + '-dislike')) document.getElementById(pId + '-dislike').innerText = pData.dislike || 0;
+        if(document.getElementById(pId + '-corrupt')) document.getElementById(pId + '-corrupt').innerText = pData.corruption || 0;
+        if(document.getElementById(pId + '-fake')) document.getElementById(pId + '-fake').innerText = pData.fake || 0;
+
+        let idxMain = partiesMain.indexOf(party);
+        if(idxMain !== -1) votesData[idxMain] = pData.vote || 0;
+
+        let idxDet = partiesDetailed.indexOf(party);
+        if(idxDet !== -1) {
+            likesData[idxDet] = pData.like || 0; dislikesData[idxDet] = pData.dislike || 0;
+            corruptionData[idxDet] = pData.corruption || 0; fakeData[idxDet] = pData.fake || 0;
+        }
+    }
+
+    mainChart.data.datasets[0].data = votesData; mainChart.update();
+    detailedChart.data.datasets[0].data = likesData; detailedChart.data.datasets[1].data = dislikesData;
+    detailedChart.data.datasets[2].data = corruptionData; detailedChart.data.datasets[3].data = fakeData;
+    detailedChart.update();
+});
+
+
+// 🖲️ SMART VOTING LOGIC (Device limit and Toggle)
 window.castVote = function(partyName, actionType) {
     if (!isLoggedIn) {
         document.getElementById('loginModal').style.display = 'flex';
         return;
     }
 
-    if (actionType === 'vote' && localStorage.getItem('hasVoted') === 'true') {
-        alert('⚠️ You have already submitted your final vote! You cannot vote again.');
+    // 1. DEVICE LIMIT LOGIC (Max 5 Votes per device)
+    if (actionType === 'vote') {
+        let deviceVotes = parseInt(localStorage.getItem('device_vote_count') || '0');
+        if (deviceVotes >= 5) {
+            alert('🚫 Warning: You have reached the maximum limit of 5 votes from this device. We block spam voting!');
+            return;
+        }
+        localStorage.setItem('device_vote_count', deviceVotes + 1);
+        
+        const partyActionRef = ref(database, 'parties/' + partyName + '/vote');
+        runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; });
+        alert(`Thank you! Your VOTE for ${partyName} has been recorded live.`);
         return;
     }
 
-    if (actionType === 'vote') {
-        localStorage.setItem('hasVoted', 'true');
-        alert(`Thank you! Your VOTE for ${partyName} has been recorded.`);
-    } else {
-        alert(`Your '${actionType}' reaction for ${partyName} has been recorded.`);
+    // 2. LIKE / DISLIKE TOGGLE LOGIC
+    if (actionType === 'like' || actionType === 'dislike') {
+        let storageKey = `reaction_${partyName}`;
+        let previousReaction = localStorage.getItem(storageKey);
+
+        if (previousReaction === actionType) {
+            alert(`You have already reacted '${actionType}' to ${partyName}.`);
+            return;
+        }
+
+        if (previousReaction && previousReaction !== actionType) {
+            const oldRef = ref(database, 'parties/' + partyName + '/' + previousReaction);
+            runTransaction(oldRef, (currentCount) => { return Math.max(0, (currentCount || 0) - 1); });
+        }
+        
+        localStorage.setItem(storageKey, actionType);
+        const newRef = ref(database, 'parties/' + partyName + '/' + actionType);
+        runTransaction(newRef, (currentCount) => { return (currentCount || 0) + 1; });
+        
+        alert(`Your '${actionType}' reaction for ${partyName} is recorded!`);
+        return;
     }
+
+    // 3. NORMAL REACTIONS
+    const partyActionRef = ref(database, 'parties/' + partyName + '/' + actionType);
+    runTransaction(partyActionRef, (currentCount) => { return (currentCount || 0) + 1; });
+    alert(`Your '${actionType}' reaction for ${partyName} has been recorded live.`);
 };
