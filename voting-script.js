@@ -30,10 +30,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// ✅ 100% CORRECT API KEY CONFIGURATION
+// ✅ 100% CORRECT API KEY CONFIGURATION (As provided by you)
 const firebaseConfig = {
-    apiKey: "AIzaSyDDNIKNSmhU79q_UXwP1wR-c88CCYMETxs",
+    apiKey: "AIzaSyDDNIkNSmhU79q_UXwP1wR-c88CCYMETXs",
     authDomain: "bbjp-vote.firebaseapp.com",
+    databaseURL: "https://bbjp-vote-default-rtdb.firebaseio.com",
     projectId: "bbjp-vote",
     storageBucket: "bbjp-vote.firebasestorage.app",
     messagingSenderId: "408980373851",
