@@ -6,13 +6,14 @@
     <title>BBJP - The Real People's Court (Live Polling)</title>
     <link rel="stylesheet" href="voting-style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="ticker-wrap notranslate">
         <div class="ticker">
-            <strong>DISCLAIMER:</strong> This website is an independent, satirical project aimed at political awareness. It has no affiliation with the ECI or any real political party.
+            <strong>DISCLAIMER:</strong> This website is an independent, satirical project aimed at political awareness. It has no affiliation with the Election Commission of India or any real political party.
         </div>
     </div>
 
@@ -27,7 +28,7 @@
                 <div id="google_translate_element" style="display: none;"></div>
                 <button type="button" id="customTranslateBtn" class="nav-btn translate-btn notranslate">🌐 Hindi</button>
                 <a href="index.html" class="nav-btn notranslate">🏠 Home</a> 
-                <button type="button" id="googleLoginBtn" class="login-btn notranslate">🔐 Login to Vote</button>
+                <button type="button" id="googleLoginBtn" class="login-btn notranslate" onclick="openLoginModal()">🔐 Login to Vote</button>
             </div>
         </nav>
         <div class="tiranga-strip"></div>
@@ -49,13 +50,19 @@
         </div>
 
         <div class="legal-alert">
-            <strong><i class="fa-solid fa-shield-halved"></i> Legal Disclaimer:</strong> This page is a work of <strong>Satire & Digital Activism</strong>. While votes are recorded from real users (secured via Google Login to prevent fake bots and spam), this is NOT an official or statutory survey. Please do not judge or consider this as a final truth or legal basis. It is simply a safe digital platform to voice the public's honest opinion. 
+            <strong><i class="fa-solid fa-shield-halved"></i> Legal Disclaimer (Parody/Satire):</strong> This platform is purely a satirical project. It does NOT represent any real political party. Votes are cast by users via secure Google Login (to prevent spam). <strong>We DO NOT store user passwords.</strong> This is NOT an official survey. The creators bear no legal liability for the user-generated polling data or public sentiment displayed here.
         </div>
     </section>
 
     <section class="graph-section">
-        <h2>Live Voting Support Graph</h2>
-        <p class="graph-subtitle">Watch the real-time public support. Swipe left/right on mobile to view clearly!</p>
+        <div class="graph-header">
+            <h2>Live Voting Support Graph</h2>
+            <div class="live-stats">
+                <div class="live-indicator notranslate"><span class="blink-dot"></span> LIVE</div>
+                <div class="total-votes">Total Votes: <span id="totalVotesCount">0</span></div>
+            </div>
+        </div>
+        <p class="graph-subtitle">Exact votes and percentages are displayed in the boxes above each party's bar.</p>
         <div class="chart-wrapper">
             <div class="chart-container">
                 <canvas id="mainVotingChart"></canvas>
@@ -147,7 +154,7 @@
 
     <section class="graph-section">
         <h2>Detailed Party Performance</h2>
-        <p class="graph-subtitle">Separate analysis of Likes, Dislikes, Corruption, and Fake Promises.</p>
+        <p class="graph-subtitle">Total numbers of Likes, Dislikes, Corruption, and Fake Promises are shown in boxes above the bars.</p>
         <div class="chart-wrapper">
             <div class="chart-container detailed-chart-container">
                 <canvas id="detailedChart"></canvas>
@@ -158,24 +165,38 @@
     <section class="bottom-join-section">
         <h2>Be a Part of the Change!</h2>
         <p>Your single vote and support can shake the system. Join the 13 categories of BBJP today.</p>
-        <a href="join.html" class="join-btn-large notranslate">🔥 JOIN BBJP MOVEMENT NOW</a>
+        
+        <div class="bottom-action-buttons">
+            <a href="join.html" class="join-btn-large notranslate">🔥 JOIN BBJP MOVEMENT NOW</a>
+            <button class="whatsapp-btn notranslate" onclick="shareOnWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Share & Expose the System
+            </button>
+        </div>
     </section>
 
     <footer class="voting-footer notranslate">
         <div class="social-icons">
-            <a href="https://instagram.com/your_id" target="_blank" class="social-btn instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" target="_blank" class="social-btn instagram"><i class="fa-brands fa-instagram"></i></a>
             <a href="mailto:bbjpofficial@gmail.com" class="social-btn gmail"><i class="fa-solid fa-envelope"></i></a>
-            <a href="https://twitter.com/your_id" target="_blank" class="social-btn twitter"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" target="_blank" class="social-btn twitter"><i class="fa-brands fa-x-twitter"></i></a>
         </div>
-        <p><strong>Disclaimer:</strong> This is an independent, satirical project. We do not authenticate the user opinions presented here.</p>
+        <p><strong>Strict Disclaimer:</strong> This is an independent, satirical project. It is not affiliated with the ECI or any real political entity. The creators are not legally liable for user-generated voting data or sentiments.</p>
         <p>© 2026 BBJP Movement. All Rights Reserved.</p>
     </footer>
 
     <div id="loginModal" class="custom-modal notranslate">
         <div class="modal-content">
-            <h3>🔒 Login Required</h3>
-            <p>Please login securely with your Google account to cast your vote and reactions. This helps us stop fake voting!</p>
-            <div class="modal-buttons">
+            <h3>🔒 Secure Login</h3>
+            <p style="font-size: 14px;">We use Google Login strictly to prevent fake votes. <strong>We do not save or have access to your passwords.</strong></p>
+            
+            <div class="tnc-box">
+                <input type="checkbox" id="tncCheckbox">
+                <label for="tncCheckbox" style="font-size: 12px; color: #555; text-align: left; display: block; cursor: pointer;">
+                    I understand this is a satirical platform and not an official survey. I agree to the terms, and I won't hold the creators legally liable for any external data issues or public sentiment.
+                </label>
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 15px;">
                 <button type="button" id="modalLoginBtn" class="login-btn-large">🔐 Login with Google</button>
                 <button type="button" onclick="closeModal()" class="close-btn">Cancel</button>
             </div>
@@ -185,6 +206,11 @@
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'hi,en', autoDisplay: false}, 'google_translate_element');
+        }
+        function shareOnWhatsApp() {
+            let msg = "मैंने 'जनता की असली अदालत' (BBJP Satirical Voting) पर अपना निष्पक्ष वोट दे दिया है! तुम भी बिना डरे सच्चाई सामने लाओ। अभी वोट करें: " + window.location.href;
+            let url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
+            window.open(url, "_blank");
         }
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
