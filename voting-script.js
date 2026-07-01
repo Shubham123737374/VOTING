@@ -27,7 +27,8 @@ document.getElementById('customTranslateBtn').addEventListener('click', function
 
 // 🚀 FIREBASE SETUP
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+// ✅ CHANGED: Imported signInWithRedirect and getRedirectResult for flawless mobile login
+import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -48,31 +49,39 @@ const provider = new GoogleAuthProvider();
 // 🔐 Global Login State
 let isLoggedIn = false; 
 
-// ✨ NEW: This keeps the user logged in even if the page refreshes!
+// ✨ NEW: Handle the result after the page redirects back from Google
+getRedirectResult(auth).then((result) => {
+    if (result) {
+        alert("Login Successful! You are ready to vote.");
+    }
+}).catch((error) => {
+    console.error("Login Redirect Error:", error);
+});
+
+// Keeps user logged in even on refresh
 onAuthStateChanged(auth, (user) => {
     if (user) {
         isLoggedIn = true;
         let btn = document.getElementById('googleLoginBtn');
         btn.innerText = `✅ Hi, ${user.displayName.split(' ')[0]}`;
         btn.style.backgroundColor = "#138808"; 
-        closeModal(); // Hides modal if it was open
+        closeModal(); 
     } else {
         isLoggedIn = false;
     }
 });
 
-// Google Login Function (Attached to both Navbar and Modal Button)
+// ✅ CHANGED: Using Redirect instead of Popup for Mobile Compatibility
 function handleGoogleLogin(e) {
     if(e) e.preventDefault();
-    signInWithPopup(auth, provider).catch((error) => {
-        alert("Login Failed. Error: " + error.message);
-    });
+    // This safely redirects to Google, avoiding browser blocking issues
+    signInWithRedirect(auth, provider);
 }
 document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
 document.getElementById('modalLoginBtn').addEventListener('click', handleGoogleLogin);
 
 
-// 📊 Main Voting Chart Setup (BBJP REMOVED - NOW 6 PARTIES)
+// 📊 Main Voting Chart Setup
 const ctxMain = document.getElementById('mainVotingChart').getContext('2d');
 const mainChart = new Chart(ctxMain, {
     type: 'bar',
@@ -96,7 +105,7 @@ const mainChart = new Chart(ctxMain, {
     }
 });
 
-// 📈 Detailed Analysis Chart Setup (BBJP REMOVED - NOW 5 PARTIES)
+// 📈 Detailed Analysis Chart Setup
 const ctxDetailed = document.getElementById('detailedChart').getContext('2d');
 const detailedChart = new Chart(ctxDetailed, {
     type: 'bar',
@@ -128,7 +137,6 @@ window.closeModal = function() {
 // 🖲️ Voting & Logic Handler
 window.castVote = function(partyName, actionType) {
     if (!isLoggedIn) {
-        // ✨ NEW: Opens the beautiful Custom Popup instead of an alert!
         document.getElementById('loginModal').style.display = 'flex';
         return;
     }
